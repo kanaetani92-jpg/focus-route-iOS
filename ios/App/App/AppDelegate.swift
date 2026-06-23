@@ -479,7 +479,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WKScriptMessageHandler, U
 
         let printController = UIPrintInteractionController.shared
         let printInfo = UIPrintInfo(dictionary: nil)
-        printInfo.jobName = "プリンセスロード タスクの記録"
+        printInfo.jobName = "Focus Route 進んだ記録"
         printInfo.outputType = .general
         printController.printInfo = printInfo
         printController.printFormatter = webView.viewPrintFormatter()

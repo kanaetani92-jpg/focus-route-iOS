@@ -1,30 +1,59 @@
 # GitHub Codespacesでの展開手順
 
-ZIPをCodespacesのExplorerへドラッグしたあと、ターミナルで実行します。
+## 1. ZIPをCodespacesへアップロード
+
+Codespacesの左側にあるExplorerへ、ZIPファイルをドラッグします。
+
+## 2. ZIPを展開
+
+ZIPが `/workspaces/focus-route-ios/focus-route-ios-build8-full-20260624.zip` にある場合:
 
 ```bash
-cd /workspaces/プリンセスロードのリポジトリ名
-unzip -o princess-road-ios-timer-performance-fix-full-20260624.zip
-cp -a princess-road-ios-timer-performance-fix-full-20260624/. .
+cd /workspaces/focus-route-ios
+unzip -o focus-route-ios-build8-full-20260624.zip
+cd focus-route-ios-build8-focus-display-20260624
 ```
 
-ZIP内のフォルダをそのまま新しいリポジトリとして使う場合:
+既存リポジトリのルートへ内容を反映する場合は、いったん展開してからコピーします。
 
 ```bash
-unzip -o princess-road-ios-timer-performance-fix-full-20260624.zip
-cd princess-road-ios-timer-performance-fix-full-20260624
+cd /workspaces/focus-route-ios
+unzip -o focus-route-ios-build8-full-20260624.zip
+cp -a focus-route-ios-build8-focus-display-20260624/. .
+```
+
+## 3. GitHubへ反映
+
+新しいリポジトリで使用する場合:
+
+```bash
+git init
+git add .
+git commit -m "Implement Focus Route iOS build 8"
+git branch -M main
+git remote add origin https://github.com/ユーザー名/リポジトリ名.git
+git push -u origin main
+```
+
+既存のFocus Routeリポジトリへ上書き展開した場合:
+
+```bash
+git status
+git add .
+git commit -m "Add focus display modes"
+git push
+```
+
+## 4. 検証
+
+```bash
 npm ci
 npm run validate
 npx cap sync ios
 ```
 
-GitHubへ反映する場合:
+## 5. Codemagic
 
-```bash
-git status
-git add .
-git commit -m "Reduce timer rendering and storage load"
-git push
-```
-
-Codemagicでは、最初に`ios-capacitor-check`、成功後に`ios-ipa-build`を実行します。
+1. `ios-capacitor-check`を実行
+2. 成功後に`ios-ipa-build`を実行
+3. App Store ConnectでBuild 8を選択

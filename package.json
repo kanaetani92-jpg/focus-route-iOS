@@ -1,7 +1,7 @@
 {
-  "name": "princess-road-ios",
-  "version": "1.0.0",
-  "description": "Princess Road iOS app built with Capacitor",
+  "name": "focus-route-ios",
+  "version": "1.0.7",
+  "description": "Focus Route iOS app built with Capacitor",
   "main": "index.js",
   "scripts": {
     "test": "npm run validate",
