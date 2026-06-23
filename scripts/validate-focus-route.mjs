@@ -33,7 +33,7 @@ requireText("capacitor", '"appName": "Focus Route"');
 requireText("iosCapacitor", "works.psychcraft.focusroute");
 requireText("plist", "<string>Focus Route</string>");
 requireText("project", "PRODUCT_BUNDLE_IDENTIFIER = works.psychcraft.focusroute;");
-requireText("project", "CURRENT_PROJECT_VERSION = 3;");
+requireText("project", "CURRENT_PROJECT_VERSION = 6;");
 requireText("appDelegate", "NativeAudioModePlugin");
 requireText("appDelegate", "NativeHapticEngine");
 requireText("appDelegate", "Focus Route 進んだ記録");
@@ -41,6 +41,17 @@ requireText("web", "バックアップを書き出す");
 requireText("web", "playTaskHaptic");
 requireText("web", "保留にして移動");
 requireText("web", "undo-task-move");
+requireText("web", "選択中の実施日");
+requireText("web", "updateHistoryDateDisplay");
+requireText("web", "＋ もう1回分追加");
+requireText("web", "addTaskRepeat");
+requireText("web", "taskRepeatUnits");
+requireText("web", "currentRoundStatus");
+requireText("web", "currentRoundRemainingSeconds");
+requireText("web", "lastTimerDomSecond");
+requireText("web", "lastStateSaveAt");
+requireText("web", "repeatRound: nextRound");
+requireText("web", "stationIdMigrations");
 
 if (contents.web !== contents.publicWeb) {
   throw new Error("www/index.html and ios/App/App/public/index.html are not synchronized");

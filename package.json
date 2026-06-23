@@ -1,6 +1,6 @@
 {
   "name": "focus-route-ios",
-  "version": "1.0.2",
+  "version": "1.0.5",
   "description": "Focus Route iOS app built with Capacitor",
   "main": "index.js",
   "scripts": {

@@ -207,6 +207,16 @@
       gap: 10px; width: min(520px, 100%); margin: 0 auto;
     }
     .focus-controls .button { width: 100%; min-width: 0; }
+    .focus-controls.is-complete { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .task-complete-status {
+      grid-column: 1 / -1; display: flex; align-items: center; justify-content: center;
+      min-height: 52px; border-radius: 7px; color: var(--brand-dark);
+      background: var(--brand-soft); font-weight: 800;
+    }
+    .focus-controls .complete-primary,
+    .focus-controls .complete-danger { grid-column: 1 / -1; }
+    .button.add-repeat { color: var(--brand-dark); border-color: #86c8c0; background: #fff; }
+    .button.add-repeat:hover { background: var(--brand-soft); }
     .button.forward { color: var(--brand-dark); border-color: #86c8c0; background: #fff; }
     .button.forward:hover { background: var(--brand-soft); }
     .focus-route { margin-top: 24px; padding-top: 22px; border-top: 1px solid var(--line); }
@@ -761,7 +771,18 @@
       <div class="dialog-header"><h2 id="historyEditorTitle">記録を編集</h2><button class="icon-button" type="button" data-action="close-history-editor" aria-label="閉じる">×</button></div>
       <div class="dialog-body">
         <input id="historyEditorId" type="hidden">
-        <div class="field"><label for="historyDateInput">実施日</label><input id="historyDateInput" type="date" required></div>
+        <div class="field">
+          <span class="field-label">実施日</span>
+          <div class="deadline-control">
+            <input id="historyDateInput" class="deadline-input" type="date" required aria-label="実施日を選ぶ">
+            <button id="historyDatePickerButton" class="deadline-picker" type="button" aria-haspopup="dialog">
+              <span id="historyDateSummary" class="deadline-summary is-empty" aria-live="polite">
+                <span>選択中の実施日</span>
+                <strong>実施日を選んでください</strong>
+              </span>
+            </button>
+          </div>
+        </div>
         <div class="field"><label for="historyTaskInput">タスク名</label><input id="historyTaskInput" maxlength="80"></div>
         <div class="field"><label for="historyMemoInput">メモ</label><input id="historyMemoInput" maxlength="160" placeholder="振り返りを短く記録"></div>
         <p id="historyFixedInfo" class="warning-box"></p>
@@ -849,6 +870,8 @@
       var undoTimer = null;
       var wakeLock = null;
       var onboardingStep = 0;
+      var lastTimerDomSecond = null;
+      var lastStateSaveAt = 0;
 
       var homeTopActions = document.getElementById("homeTopActions");
       var homeContent = document.getElementById("homeContent");
@@ -862,6 +885,9 @@
       var taskMoveDialog = document.getElementById("taskMoveDialog");
       var historyEditorDialog = document.getElementById("historyEditorDialog");
       var historyEditorForm = document.getElementById("historyEditorForm");
+      var historyDateInput = document.getElementById("historyDateInput");
+      var historyDatePickerButton = document.getElementById("historyDatePickerButton");
+      var historyDateSummary = document.getElementById("historyDateSummary");
       var onboardingDialog = document.getElementById("onboardingDialog");
       var backupImportInput = document.getElementById("backupImportInput");
       var routeForm = document.getElementById("routeForm");
@@ -903,6 +929,7 @@
             running: false,
             skippedTaskIds: [],
             taskProgress: {},
+            taskRepeatUnits: {},
             awaitingNextTaskIndex: null,
             archived: false,
             archivedAt: null,
@@ -962,6 +989,7 @@
           silentModePlayback: false,
           onboardingSeen: false
         }, loaded.settings || {});
+        var stationIdMigrations = {};
         loaded.routes.forEach(function (route) {
           route.routeType = route.routeType === "repeat" ? "repeat" : "continuous";
           route.runId = route.runId || uid();
@@ -972,6 +1000,7 @@
           route.soundTiming = route.soundTiming === "segment" ? "segment" : "job";
           route.skippedTaskIds = Array.isArray(route.skippedTaskIds) ? route.skippedTaskIds : [];
           route.taskProgress = route.taskProgress && typeof route.taskProgress === "object" ? route.taskProgress : {};
+          route.taskRepeatUnits = route.taskRepeatUnits && typeof route.taskRepeatUnits === "object" ? route.taskRepeatUnits : {};
           route.awaitingNextTaskIndex = Number.isInteger(route.awaitingNextTaskIndex) ? route.awaitingNextTaskIndex : null;
           route.archived = route.archived === true;
           route.archivedAt = route.archivedAt || null;
@@ -983,14 +1012,47 @@
             : null;
           route.jobs = Array.isArray(route.jobs) ? route.jobs : [];
           route.stations = Array.isArray(route.stations) ? route.stations : [];
-          route.stations.forEach(function (station) {
-            if (station.jobId) station.id = station.jobId + "-step-" + stationSegmentIndex(station);
+          var jobIds = Array.from(new Set(route.stations.map(function (station) { return station.jobId; }).filter(Boolean)));
+          jobIds.forEach(function (jobId) {
+            var jobStations = route.stations.filter(function (station) { return station.jobId === jobId; });
+            var baseStations = jobStations.filter(function (station) { return !station.isExtraRound && stationRound(station) === 1; });
+            var savedUnit = route.taskRepeatUnits[jobId];
+            var unitCount = savedUnit && Array.isArray(savedUnit.stationMinutes) && savedUnit.stationMinutes.length
+              ? savedUnit.stationMinutes.length
+              : Math.max(1, baseStations.length || jobStations.length);
+            baseStations.forEach(function (station, index) {
+              var oldId = station.id;
+              station.repeatRound = 1;
+              station.segmentIndex = index + 1;
+              station.segmentCount = unitCount;
+              station.id = jobId + "-step-" + (index + 1);
+              if (oldId) stationIdMigrations[route.id + "|" + oldId] = station.id;
+            });
+            var extraStations = jobStations.filter(function (station) { return station.isExtraRound || stationRound(station) > 1; });
+            extraStations.forEach(function (station, index) {
+              var oldId = station.id;
+              var round = Math.floor(index / unitCount) + 2;
+              var segment = index % unitCount + 1;
+              station.isExtraRound = true;
+              station.repeatRound = round;
+              station.segmentIndex = segment;
+              station.segmentCount = unitCount;
+              station.id = jobId + "-round-" + round + "-step-" + segment;
+              if (oldId) stationIdMigrations[route.id + "|" + oldId] = station.id;
+            });
           });
         });
         loaded.history.forEach(function (item) {
           var route = loaded.routes.find(function (candidate) { return candidate.id === item.routeId; });
           if (!item.runId && route) item.runId = route.runId;
-          if (item.jobId && item.segmentIndex) item.stationId = item.jobId + "-step-" + item.segmentIndex;
+          var migratedId = stationIdMigrations[item.routeId + "|" + item.stationId];
+          if (migratedId) item.stationId = migratedId;
+          var matchingStation = route && route.stations.find(function (station) { return station.id === item.stationId; });
+          if (matchingStation) {
+            item.segmentIndex = stationSegmentIndex(matchingStation);
+            item.segmentCount = stationSegmentCount(matchingStation);
+            item.stationName = stationJobName(matchingStation) + " " + item.segmentIndex + "/" + item.segmentCount + (item.completed === false ? "（途中）" : "");
+          }
           if (!Number.isFinite(Number(item.actualElapsedSeconds))) {
             item.actualElapsedSeconds = Math.max(0, Number(item.minutes || 0) * 60);
           }
@@ -1272,6 +1334,48 @@
         }, 0);
       }
 
+      function stationRound(station) {
+        return Math.max(1, Number(station && station.repeatRound) || 1);
+      }
+
+      function currentRoundStatus(route, group) {
+        var station = currentStation(route);
+        var round = stationRound(station);
+        var roundStations = group.stations.filter(function (item) {
+          return stationRound(item) === round;
+        });
+        if (!roundStations.length) roundStations = group.stations.slice();
+        var roundIds = new Set(roundStations.map(function (item) { return item.id; }));
+        var completed = routeHistory(route).filter(function (item) {
+          return roundIds.has(item.stationId);
+        }).length;
+        var fraction = 0;
+        if (station && roundIds.has(station.id) && route.awaitingNextTaskIndex === null) {
+          fraction = clamp(Number(route.stationElapsed || 0) / (Number(station.minutes || 0) * 60), 0, 1);
+        }
+        return {
+          round: round,
+          stations: roundStations,
+          count: Math.max(1, roundStations.length),
+          completed: completed,
+          value: clamp(completed + fraction, 0, Math.max(1, roundStations.length))
+        };
+      }
+
+      function currentRoundRemainingSeconds(route, group) {
+        if (route.awaitingNextTaskIndex !== null) return 0;
+        var status = currentRoundStatus(route, group);
+        var station = currentStation(route);
+        return status.stations.reduce(function (sum, item) {
+          var absoluteIndex = route.stations.findIndex(function (candidate) { return candidate.id === item.id; });
+          if (absoluteIndex < route.progressIndex) return sum;
+          if (station && item.id === station.id) {
+            return sum + Math.max(0, Number(item.minutes || 0) * 60 - Number(route.stationElapsed || 0));
+          }
+          return sum + Number(item.minutes || 0) * 60;
+        }, 0);
+      }
+
       function formatDate(dateValue) {
         if (!dateValue) return "締切なし";
         var date = new Date(dateValue + "T00:00:00");
@@ -1302,10 +1406,14 @@
           var progress = groupProgress(route, group);
           var css = progress.skipped ? " is-skipped" : progress.completed >= group.count ? " is-done" : progress.current ? " is-current" : "";
           var label = compact && group.name.length > 12 ? group.name.slice(0, 12) + "…" : group.name;
-          var angle = progress.value / group.count * 360;
-          var step = 360 / group.count;
+          var visual = progress.current
+            ? currentRoundStatus(route, group)
+            : { value: progress.completed >= group.count ? group.stations[0] && stationSegmentCount(group.stations[0]) || 1 : 0, count: group.stations[0] && stationSegmentCount(group.stations[0]) || 1 };
+          var angle = visual.value / visual.count * 360;
+          var step = 360 / visual.count;
           var stateLabel = progress.skipped ? "保留" : progress.completed >= group.count ? "完了" : progress.current ? "" : "開始前";
-          return '<div class="station' + css + '"><div class="station-dot" style="--angle:' + angle + 'deg;--step:' + step + 'deg"><span class="station-center"><strong class="station-time">' + formatClock(groupRemainingSeconds(route, group)) + '</strong><span class="station-state">' + stateLabel + '</span></span></div>' +
+          var visualRemaining = progress.current ? currentRoundRemainingSeconds(route, group) : groupRemainingSeconds(route, group);
+          return '<div class="station' + css + '"><div class="station-dot" style="--angle:' + angle + 'deg;--step:' + step + 'deg"><span class="station-center"><strong class="station-time">' + formatClock(visualRemaining) + '</strong><span class="station-state">' + stateLabel + '</span></span></div>' +
             '<span class="station-count">' + progress.completed + ' / ' + group.count + ' ステップ</span><span class="station-name">' + escapeHtml(label) + '</span></div>';
         }).join("") + '</div>';
       }
@@ -1387,9 +1495,10 @@
         });
         var currentTaskIndex = groups.indexOf(group);
         var groupStatus = groupProgress(route, group);
-        var remaining = groupRemainingSeconds(route, group);
-        var angle = groupStatus.value / group.count * 360;
-        var step = 360 / group.count;
+        var roundStatus = currentRoundStatus(route, group);
+        var remaining = currentRoundRemainingSeconds(route, group);
+        var angle = roundStatus.value / roundStatus.count * 360;
+        var step = 360 / roundStatus.count;
         var next = route.stations[route.awaitingNextTaskIndex !== null ? route.awaitingNextTaskIndex : route.progressIndex + 1];
         var jobName = stationJobName(station);
         var segmentIndex = stationSegmentIndex(station);
@@ -1400,11 +1509,19 @@
         var html = '<div class="focus-header"><div><p class="eyebrow">Focus session</p><h2 id="focusTitle">' + escapeHtml(route.title) + '</h2></div><button class="button secondary" type="button" data-action="go-home">ルート一覧へ</button></div>';
         html += '<article class="card focus-card"><div class="focus-kicker">ステップ ' + segmentIndex + ' / ' + segmentCount + '・全体 ' + (route.progressIndex + 1) + ' / ' + route.stations.length + '</div><h3>' + escapeHtml(jobName) + '</h3>' + (nextText ? '<p class="focus-next">' + escapeHtml(nextText) + '</p>' : "");
         html += '<div class="timer-ring" id="timerRing" style="--angle:' + angle + 'deg;--step:' + step + 'deg"><div class="timer-inner"><div id="timerValue" class="timer-value">' + formatClock(remaining) + '</div><div id="timerState" class="timer-state">' + (route.awaitingNextTaskIndex !== null ? "完了" : route.stationElapsed > 0 ? "" : "開始前") + '</div></div></div>';
-        html += '<div class="focus-controls" aria-label="タイマーとタスクの操作">';
-        html += '<button class="button primary" type="button" data-action="toggle-timer"' + (route.awaitingNextTaskIndex !== null ? " disabled" : "") + '>' + (route.awaitingNextTaskIndex !== null ? "タスク完了" : route.running ? "一時停止" : route.stationElapsed > 0 || groupStatus.completed > 0 ? "再開する" : "集中を始める") + '</button>';
-        html += '<button class="button forward" type="button" data-action="next-task" aria-label="次のタスクに行く"' + (currentTaskIndex >= groups.length - 1 ? " disabled" : "") + '>次のタスク</button>';
-        html += '<button class="button secondary" type="button" data-action="previous-task" aria-label="前のタスクに戻る"' + (currentTaskIndex <= 0 ? " disabled" : "") + '>前のタスク</button>';
-        html += '<button class="button danger" type="button" data-action="reset-task" aria-label="このタスクをやり直す">やり直す</button>';
+        html += '<div class="focus-controls' + (route.awaitingNextTaskIndex !== null ? " is-complete" : "") + '" aria-label="タイマーとタスクの操作">';
+        if (route.awaitingNextTaskIndex !== null) {
+          html += '<div class="task-complete-status" role="status">✓ タスク完了</div>';
+          html += '<button class="button primary complete-primary" type="button" data-action="next-task" aria-label="次のタスクへ進む"' + (currentTaskIndex >= groups.length - 1 ? " disabled" : "") + '>次のタスクへ進む</button>';
+          html += '<button class="button secondary" type="button" data-action="previous-task" aria-label="前のタスクに戻る"' + (currentTaskIndex <= 0 ? " disabled" : "") + '>前のタスク</button>';
+          html += '<button class="button add-repeat" type="button" data-action="add-task-repeat" aria-label="このタスクにもう1回分追加">＋ もう1回分追加</button>';
+          html += '<button class="button danger complete-danger" type="button" data-action="reset-task" aria-label="このタスクをやり直す">このタスクをやり直す</button>';
+        } else {
+          html += '<button class="button primary" type="button" data-action="toggle-timer">' + (route.running ? "一時停止" : route.stationElapsed > 0 || groupStatus.completed > 0 ? "再開する" : "集中を始める") + '</button>';
+          html += '<button class="button forward" type="button" data-action="next-task" aria-label="次のタスクに行く"' + (currentTaskIndex >= groups.length - 1 ? " disabled" : "") + '>次のタスク</button>';
+          html += '<button class="button secondary" type="button" data-action="previous-task" aria-label="前のタスクに戻る"' + (currentTaskIndex <= 0 ? " disabled" : "") + '>前のタスク</button>';
+          html += '<button class="button danger" type="button" data-action="reset-task" aria-label="このタスクをやり直す">このタスクをやり直す</button>';
+        }
         html += '</div>';
         html += compactTaskList(route) + '</article>';
         focusContent.innerHTML = html;
@@ -1457,7 +1574,7 @@
         var periods = [["today", "今日"], ["week", "7日間"], ["month", "今月"], ["all", "すべて"]];
         return '<section class="card history-filter-card"><div class="period-filter">' + periods.map(function (period) {
           return '<button type="button" data-history-period="' + period[0] + '" class="' + (filters.period === period[0] ? "is-selected" : "") + '">' + period[1] + '</button>';
-        }).join("") + '</div><div class="history-filter-row"><label>ルート<select data-history-filter="route"><option value="active"' + (filters.routeId === "active" ? " selected" : "") + '>現在のルート</option><option value="all"' + (filters.routeId === "all" ? " selected" : "") + '>すべてのルート</option>' + routeOptions + '</select></label><label>タスク<select data-history-filter="task"><option value="all">すべてのタスク</option>' + taskOptions + '</select></label><label>結果<select data-history-filter="result"><option value="all"' + (filters.result === "all" ? " selected" : "") + '>すべて</option><option value="completed"' + (filters.result === "completed" ? " selected" : "") + '>完了</option><option value="partial"' + (filters.result === "partial" ? " selected" : "") + '>中断</option></select></label><label>選択日<select data-history-filter="date"><option value="">' + (filters.date ? "日付選択を解除" : "すべての日") + '</option>' + (filters.date ? '<option value="' + filters.date + '" selected>' + filters.date.replaceAll("-", "/") + '</option>' : "") + '</select></label></div><p class="history-filter-status">' + items.length + '件・実際の集中 ' + displayMinutes(items.reduce(function (sum, item) { return sum + historyMinutes(item); }, 0)) + '分を表示中</p></section>';
+        }).join("") + '</div><div class="history-filter-row"><label>ルート<select data-history-filter="route"><option value="active"' + (filters.routeId === "active" ? " selected" : "") + '>現在のルート</option><option value="all"' + (filters.routeId === "all" ? " selected" : "") + '>すべてのルート</option>' + routeOptions + '</select></label><label>タスク<select data-history-filter="task"><option value="all">すべてのタスク</option>' + taskOptions + '</select></label><label>結果<select data-history-filter="result"><option value="all"' + (filters.result === "all" ? " selected" : "") + '>すべて</option><option value="completed"' + (filters.result === "completed" ? " selected" : "") + '>完了</option><option value="partial"' + (filters.result === "partial" ? " selected" : "") + '>中断</option></select></label><label>選択日<select data-history-filter="date"><option value="">' + (filters.date ? "日付選択を解除" : "すべての日") + '</option>' + (filters.date ? '<option value="' + filters.date + '" selected>' + escapeHtml(formatFullDateWithWeekday(filters.date)) + '</option>' : "") + '</select></label></div><p class="history-filter-status">' + items.length + '件・実際の集中 ' + displayMinutes(items.reduce(function (sum, item) { return sum + historyMinutes(item); }, 0)) + '分を表示中</p></section>';
       }
 
       function historyTabs() {
@@ -1622,11 +1739,46 @@
         return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0") + "-" + String(date.getDate()).padStart(2, "0");
       }
 
+      function formatFullDateWithWeekday(dateValue) {
+        if (!dateValue) return "";
+        var date = new Date(dateValue + "T00:00:00");
+        if (Number.isNaN(date.getTime())) return "";
+        return new Intl.DateTimeFormat("ja-JP", {
+          year: "numeric", month: "long", day: "numeric", weekday: "short"
+        }).format(date);
+      }
+
+      function updateHistoryDateDisplay() {
+        var dateValue = historyDateInput.value;
+        historyDateSummary.classList.remove("is-empty", "is-sunday", "is-saturday");
+        if (!dateValue) {
+          historyDateSummary.classList.add("is-empty");
+          historyDateSummary.querySelector("strong").textContent = "実施日を選んでください";
+          return;
+        }
+        var date = new Date(dateValue + "T00:00:00");
+        if (date.getDay() === 0) historyDateSummary.classList.add("is-sunday");
+        if (date.getDay() === 6) historyDateSummary.classList.add("is-saturday");
+        historyDateSummary.querySelector("strong").textContent = formatFullDateWithWeekday(dateValue);
+      }
+
+      function openDatePicker(input) {
+        try {
+          if (typeof input.showPicker === "function") {
+            input.showPicker();
+            return;
+          }
+        } catch (error) {}
+        input.focus();
+        input.click();
+      }
+
       function openHistoryEditor(id) {
         var item = state.history.find(function (record) { return record.id === id; });
         if (!item) return;
         document.getElementById("historyEditorId").value = item.id;
-        document.getElementById("historyDateInput").value = localDateInput(item.completedAt);
+        historyDateInput.value = localDateInput(item.completedAt);
+        updateHistoryDateDisplay();
         document.getElementById("historyTaskInput").value = String(item.stationName || "").replace(/\s+\d+\/\d+(?:（途中）)?$/, "");
         document.getElementById("historyMemoInput").value = item.memo || "";
         document.getElementById("historyFixedInfo").textContent = "実測時間 " + displayMinutes(historyMinutes(item)) + "分と完了状態は、記録の正確性を保つため変更できません。";
@@ -1640,7 +1792,7 @@
         });
         if (!item) return;
         var original = new Date(item.completedAt);
-        var parts = document.getElementById("historyDateInput").value.split("-").map(Number);
+        var parts = historyDateInput.value.split("-").map(Number);
         if (parts.length === 3) {
           item.completedAt = new Date(parts[0], parts[1] - 1, parts[2], original.getHours(), original.getMinutes(), original.getSeconds()).getTime();
         }
@@ -1925,13 +2077,16 @@
         if (mode === "duplicate" || !existing) {
           target = {
             id: uid(), createdAt: Date.now(), runId: uid(), runNumber: 1,
-            progressIndex: 0, stationElapsed: 0, stationActualElapsed: 0, lastTimerUpdateAt: null, running: false, previousProgressIndex: null, skippedTaskIds: [], taskProgress: {}, awaitingNextTaskIndex: null, archived: false, archivedAt: null
+            progressIndex: 0, stationElapsed: 0, stationActualElapsed: 0, lastTimerUpdateAt: null, running: false, previousProgressIndex: null, skippedTaskIds: [], taskProgress: {}, taskRepeatUnits: {}, awaitingNextTaskIndex: null, archived: false, archivedAt: null
           };
           state.routes.unshift(target);
         }
         var preserved = mode === "preserve" && existing
           ? preserveProgress(existing, draft)
           : { progressIndex: 0, stationElapsed: 0, stationActualElapsed: 0, keptCurrentStation: false };
+        var repeatUnits = existing && structuralSignature(existing) === structuralSignature(draft)
+          ? Object.assign({}, existing.taskRepeatUnits || {})
+          : {};
         if (existing && mode === "reset") recordPartialProgress(existing, "route-reset");
         if (existing && mode === "preserve" && !preserved.keptCurrentStation) recordPartialProgress(existing, "route-edited");
         Object.assign(target, draft, {
@@ -1942,6 +2097,7 @@
           lastTimerUpdateAt: null,
           running: false,
           previousProgressIndex: null,
+          taskRepeatUnits: repeatUnits,
           awaitingNextTaskIndex: null,
           archived: false,
           archivedAt: null
@@ -2020,6 +2176,8 @@
         stopLoop();
         var route = activeRoute();
         if (route && route.running && !Number(route.lastTimerUpdateAt)) route.lastTimerUpdateAt = Date.now();
+        lastTimerDomSecond = null;
+        lastStateSaveAt = Date.now();
         timerId = window.setInterval(tick, 250);
       }
 
@@ -2123,27 +2281,39 @@
           renderFocus();
           if (state.currentView === "history") renderHistory();
         }
-        updateTimerDom(route, currentStation(route));
-        updateHistoryMetrics(route);
-        if (Math.floor(route.stationElapsed) % 5 === 0) saveState();
+        var displayedSecond = Math.floor(Number(route.stationElapsed) || 0);
+        if (crossedBoundary || displayedSecond !== lastTimerDomSecond) {
+          lastTimerDomSecond = displayedSecond;
+          updateTimerDom(route, currentStation(route));
+          updateHistoryMetrics(route);
+        }
+        if (now - lastStateSaveAt >= 5000) {
+          lastStateSaveAt = now;
+          saveState();
+        }
       }
 
       function updateTimerDom(route, station) {
         var group = jobGroups(route).find(function (item) {
           return route.progressIndex >= item.startIndex && route.progressIndex < item.startIndex + item.count;
         });
-        var progress = groupProgress(route, group);
-        var remaining = groupRemainingSeconds(route, group);
+        if (!group) return;
+        var progress = currentRoundStatus(route, group);
+        var remaining = currentRoundRemainingSeconds(route, group);
         var timerValue = document.getElementById("timerValue");
         var timerRing = document.getElementById("timerRing");
         var timerState = document.getElementById("timerState");
         if (timerValue) timerValue.textContent = formatClock(remaining);
-        if (timerRing) timerRing.style.setProperty("--angle", String(progress.value / group.count * 360) + "deg");
+        if (timerRing) {
+          timerRing.style.setProperty("--angle", String(progress.value / progress.count * 360) + "deg");
+          timerRing.style.setProperty("--step", String(360 / progress.count) + "deg");
+        }
         if (timerState) timerState.textContent = route.awaitingNextTaskIndex !== null ? "完了" : route.stationElapsed > 0 ? "" : "開始前";
         document.querySelectorAll(".station-dot").forEach(function (ring) {
           var card = ring.closest(".station");
           if (!card || !card.classList.contains("is-current")) return;
-          ring.style.setProperty("--angle", String(progress.value / group.count * 360) + "deg");
+          ring.style.setProperty("--angle", String(progress.value / progress.count * 360) + "deg");
+          ring.style.setProperty("--step", String(360 / progress.count) + "deg");
           var time = card.querySelector(".station-time");
           if (time) time.textContent = formatClock(remaining);
         });
@@ -2203,6 +2373,89 @@
         saveState();
         renderFocus();
         showToast("タスク「" + currentGroup.name + "」を最初からやり直します");
+      }
+
+      function taskRepeatUnit(route, group) {
+        var saved = route.taskRepeatUnits && route.taskRepeatUnits[group.key];
+        if (saved && Array.isArray(saved.stationMinutes) && saved.stationMinutes.length) {
+          return {
+            stationMinutes: saved.stationMinutes.map(Number),
+            minutes: saved.stationMinutes.reduce(function (sum, value) { return sum + Number(value || 0); }, 0),
+            splitCount: saved.stationMinutes.length
+          };
+        }
+        var stationMinutes = group.stations.map(function (station) { return Number(station.minutes || 0); });
+        return {
+          stationMinutes: stationMinutes,
+          minutes: stationMinutes.reduce(function (sum, value) { return sum + value; }, 0),
+          splitCount: stationMinutes.length
+        };
+      }
+
+      async function addTaskRepeat() {
+        var route = activeRoute();
+        if (!route || route.awaitingNextTaskIndex === null) return;
+        var groups = jobGroups(route);
+        var group = groups.find(function (item) {
+          return route.progressIndex >= item.startIndex && route.progressIndex < item.startIndex + item.count;
+        });
+        if (!group) return;
+        var snapshot = JSON.stringify(state);
+        var unit = taskRepeatUnit(route, group);
+        route.taskRepeatUnits[group.key] = {
+          stationMinutes: unit.stationMinutes.slice()
+        };
+        var oldCount = group.stations.length;
+        var jobId = group.stations[0].jobId;
+        var insertionIndex = group.startIndex + oldCount;
+        var nextRound = group.stations.reduce(function (maximum, station) {
+          return Math.max(maximum, stationRound(station));
+        }, 1) + 1;
+        var additions = unit.stationMinutes.map(function (minutes, index) {
+          var segmentIndex = index + 1;
+          return {
+            id: jobId + "-round-" + nextRound + "-step-" + segmentIndex,
+            jobId: jobId,
+            jobName: group.name,
+            name: group.name,
+            segmentIndex: segmentIndex,
+            segmentCount: unit.splitCount,
+            repeatRound: nextRound,
+            minutes: Number(minutes),
+            isExtraRound: true
+          };
+        });
+        route.stations.splice.apply(route.stations, [insertionIndex, 0].concat(additions));
+        delete route.taskProgress[group.key];
+        route.awaitingNextTaskIndex = null;
+        route.progressIndex = insertionIndex;
+        route.stationElapsed = 0;
+        route.stationActualElapsed = 0;
+        route.previousProgressIndex = null;
+        route.skippedTaskIds = route.skippedTaskIds.filter(function (id) { return id !== group.key; });
+        await prepareAudio();
+        route.running = true;
+        route.lastTimerUpdateAt = Date.now();
+        saveState();
+        render();
+        startLoop();
+        requestWakeLock();
+        showUndoToast("「" + group.name + "」にもう1回分を追加しました", snapshot);
+      }
+
+      function clearExtraTaskRounds(route) {
+        if (!route || !route.stations.some(function (station) { return station.isExtraRound; })) return;
+        route.stations = route.stations.filter(function (station) { return !station.isExtraRound; });
+        route.jobs.forEach(function (job) {
+          var stations = route.stations.filter(function (station) { return station.jobId === job.id; });
+          stations.forEach(function (station, index) {
+            station.segmentIndex = index + 1;
+            station.segmentCount = stations.length;
+            station.repeatRound = 1;
+            station.id = job.id + "-step-" + (index + 1);
+          });
+        });
+        route.taskRepeatUnits = {};
       }
 
       function currentTaskContext(direction) {
@@ -2376,6 +2629,7 @@
       function restartRoute() {
         var route = activeRoute();
         if (!route) return;
+        clearExtraTaskRounds(route);
         route.progressIndex = 0;
         route.stationElapsed = 0;
         route.stationActualElapsed = 0;
@@ -2475,6 +2729,7 @@
           previousProgressIndex: null,
           skippedTaskIds: [],
           taskProgress: {},
+          taskRepeatUnits: {},
           awaitingNextTaskIndex: null,
           archived: false,
           archivedAt: null,
@@ -2533,6 +2788,7 @@
       function reuseRoute(id) {
         var route = state.routes.find(function (item) { return item.id === id; });
         if (!route) return;
+        clearExtraTaskRounds(route);
         route.archived = false;
         route.archivedAt = null;
         route.progressIndex = 0;
@@ -2720,6 +2976,21 @@
           });
           if (resetGroup) askConfirmation("このタスクをやり直しますか？", "「" + resetGroup.name + "」の完了済みステップは取り消されます。", "やり直す", resetTask);
         }
+        if (action === "add-task-repeat") {
+          var repeatRoute = activeRoute();
+          var repeatGroup = repeatRoute && jobGroups(repeatRoute).find(function (group) {
+            return repeatRoute.progressIndex >= group.startIndex && repeatRoute.progressIndex < group.startIndex + group.count;
+          });
+          if (repeatRoute && repeatGroup && repeatRoute.awaitingNextTaskIndex !== null) {
+            var repeatUnit = taskRepeatUnit(repeatRoute, repeatGroup);
+            askConfirmation(
+              "もう1回分追加しますか？",
+              "「" + repeatGroup.name + "」に" + displayMinutes(repeatUnit.minutes) + "分・" + repeatUnit.splitCount + "ステップを追加し、すぐに開始します。",
+              "追加して始める",
+              addTaskRepeat
+            );
+          }
+        }
         if (action === "previous-task") {
           openTaskMoveDialog(-1);
         }
@@ -2780,17 +3051,15 @@
         if (selectedTab) selectedTab.focus();
       });
       deadlinePickerButton.addEventListener("click", function () {
-        try {
-          if (typeof routeDeadlineInput.showPicker === "function") {
-            routeDeadlineInput.showPicker();
-            return;
-          }
-        } catch (error) {}
-        routeDeadlineInput.focus();
-        routeDeadlineInput.click();
+        openDatePicker(routeDeadlineInput);
       });
       routeDeadlineInput.addEventListener("input", updateDeadlineDisplay);
       routeDeadlineInput.addEventListener("change", updateDeadlineDisplay);
+      historyDatePickerButton.addEventListener("click", function () {
+        openDatePicker(historyDateInput);
+      });
+      historyDateInput.addEventListener("input", updateHistoryDateDisplay);
+      historyDateInput.addEventListener("change", updateHistoryDateDisplay);
       splitModeInput.addEventListener("change", updateSplitMode);
       commonSplitCountInput.addEventListener("input", function () {
         if (splitModeInput.value === "common") {
