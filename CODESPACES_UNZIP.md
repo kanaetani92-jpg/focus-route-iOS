@@ -1,59 +1,30 @@
 # GitHub Codespacesでの展開手順
 
-## 1. ZIPをCodespacesへアップロード
-
-Codespacesの左側にあるExplorerへ、ZIPファイルをドラッグします。
-
-## 2. ZIPを展開
-
-ZIPが `/workspaces/focus-route-ios/focus-route-ios-build6-full-20260623.zip` にある場合:
+ZIPをCodespacesのExplorerへドラッグしたあと、ターミナルで実行します。
 
 ```bash
-cd /workspaces/focus-route-ios
-unzip -o focus-route-ios-build6-full-20260623.zip
-cd focus-route-ios-build6-repeat-circle-20260623
+cd /workspaces/プリンセスロードのリポジトリ名
+unzip -o princess-road-ios-timer-performance-fix-full-20260624.zip
+cp -a princess-road-ios-timer-performance-fix-full-20260624/. .
 ```
 
-既存リポジトリのルートへ内容を反映する場合は、いったん展開してからコピーします。
+ZIP内のフォルダをそのまま新しいリポジトリとして使う場合:
 
 ```bash
-cd /workspaces/focus-route-ios
-unzip -o focus-route-ios-build6-full-20260623.zip
-cp -a focus-route-ios-build6-repeat-circle-20260623/. .
-```
-
-## 3. GitHubへ反映
-
-新しいリポジトリで使用する場合:
-
-```bash
-git init
-git add .
-git commit -m "Implement Focus Route iOS build 6"
-git branch -M main
-git remote add origin https://github.com/ユーザー名/リポジトリ名.git
-git push -u origin main
-```
-
-既存のFocus Routeリポジトリへ上書き展開した場合:
-
-```bash
-git status
-git add .
-git commit -m "Keep repeated task circle size stable"
-git push
-```
-
-## 4. 検証
-
-```bash
+unzip -o princess-road-ios-timer-performance-fix-full-20260624.zip
+cd princess-road-ios-timer-performance-fix-full-20260624
 npm ci
 npm run validate
 npx cap sync ios
 ```
 
-## 5. Codemagic
+GitHubへ反映する場合:
 
-1. `ios-capacitor-check`を実行
-2. 成功後に`ios-ipa-build`を実行
-3. App Store ConnectでBuild 6を選択
+```bash
+git status
+git add .
+git commit -m "Reduce timer rendering and storage load"
+git push
+```
+
+Codemagicでは、最初に`ios-capacitor-check`、成功後に`ios-ipa-build`を実行します。

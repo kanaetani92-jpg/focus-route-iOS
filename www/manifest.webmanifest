@@ -1,11 +1,11 @@
 {
-  "name": "Focus Route",
-  "short_name": "Focus Route",
-  "description": "仕事を小さなステップに分け、円形タイマーで進める集中支援アプリ",
+  "name": "プリンセスロード",
+  "short_name": "プリンセスロード",
+  "description": "願いを15分のレッスンに分け、次の一歩へ進む行動支援アプリ",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f8faf9",
-  "theme_color": "#0f766e",
+  "background_color": "#fff7fc",
+  "theme_color": "#4c2756",
   "orientation": "any",
   "icons": [
     {

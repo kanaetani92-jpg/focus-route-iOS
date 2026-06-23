@@ -1,6 +1,6 @@
 workflows:
   ios-capacitor-check:
-    name: Focus Route iOS Check
+    name: Princess Road iOS Check
     max_build_duration: 120
     instance_type: mac_mini_m2
 
@@ -14,7 +14,7 @@ workflows:
         script: |
           npm ci
 
-      - name: Validate Focus Route assets
+      - name: Validate Princess Road assets
         script: |
           npm run validate
 
@@ -34,7 +34,7 @@ workflows:
       - ios/App/App
 
   ios-ipa-build:
-    name: Focus Route IPA Build
+    name: Princess Road IPA Build
     max_build_duration: 120
     instance_type: mac_mini_m2
 
@@ -47,20 +47,20 @@ workflows:
       cocoapods: default
 
       vars:
-        BUNDLE_ID: "works.psychcraft.focusroute"
+        BUNDLE_ID: "works.psychcraft.princessroad"
         XCODE_PROJECT: "ios/App/App.xcodeproj"
         XCODE_SCHEME: "App"
 
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: works.psychcraft.focusroute
+        bundle_identifier: works.psychcraft.princessroad
 
     scripts:
       - name: Install npm dependencies
         script: |
           npm ci
 
-      - name: Validate Focus Route assets
+      - name: Validate Princess Road assets
         script: |
           npm run validate
 
