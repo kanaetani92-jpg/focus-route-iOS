@@ -1,5 +1,11 @@
 # Focus Route iOS
 
+## Build 9
+
+通常文言で「すぐ始める」「15分だけ集中」「テンプレート」「カテゴリ」
+「今日はここまで」「かかった時間」を追加しました。
+詳しくは `BUILD9_USUAL_FEATURES.md` を確認してください。
+
 ## Build 8
 
 設定に「集中画面の表示」を追加しました。
@@ -55,7 +61,7 @@
 - Bundle ID: `works.psychcraft.focusroute`
 - Scheme: `App`
 - Marketing Version: `1.0`
-- Build Number: `8`
+- Build Number: `9`
 
 ## 再利用したiOS機能
 

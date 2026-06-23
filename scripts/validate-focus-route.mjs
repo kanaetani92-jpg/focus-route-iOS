@@ -25,7 +25,7 @@ const requireText = (key, needle) => {
 
 requireText("web", "<title>Focus Route</title>");
 requireText("web", "今日、どこまで進みますか");
-requireText("web", "到着したルート");
+requireText("web", "完了したルート");
 requireText("web", "NativeAudioMode");
 requireText("publicWeb", "<title>Focus Route</title>");
 requireText("capacitor", "works.psychcraft.focusroute");
@@ -33,7 +33,7 @@ requireText("capacitor", '"appName": "Focus Route"');
 requireText("iosCapacitor", "works.psychcraft.focusroute");
 requireText("plist", "<string>Focus Route</string>");
 requireText("project", "PRODUCT_BUNDLE_IDENTIFIER = works.psychcraft.focusroute;");
-requireText("project", "CURRENT_PROJECT_VERSION = 8;");
+requireText("project", "CURRENT_PROJECT_VERSION = 9;");
 requireText("appDelegate", "NativeAudioModePlugin");
 requireText("appDelegate", "NativeHapticEngine");
 requireText("appDelegate", "Focus Route 進んだ記録");
