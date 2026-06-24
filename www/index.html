@@ -150,7 +150,7 @@
     .station-count { display: block; margin-bottom: 5px; color: var(--muted); font-size: 11px; font-weight: 800; }
     .station-name { display: block; color: var(--ink); font-size: 15px; font-weight: 800; line-height: 1.4; }
     .station.is-current .station-name { color: var(--blue); }
-    .summary-card { display: grid; grid-template-rows: repeat(4, auto); }
+    .summary-card { display: grid; grid-template-rows: repeat(3, 1fr); }
     .metric { padding: 19px 20px; }
     .metric + .metric { border-top: 1px solid var(--line); }
     .metric span { display: block; margin-bottom: 8px; color: var(--muted); font-size: 12px; font-weight: 700; }
@@ -158,14 +158,6 @@
     .section-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 30px 0 13px; }
     .section-title h3 { margin: 0; font-size: 18px; }
     .route-list { display: grid; gap: 10px; }
-    .quick-actions {
-      display: grid; grid-template-columns: 1.1fr .9fr; gap: 14px; margin: 0 0 22px;
-    }
-    .quick-card { padding: 18px 20px; }
-    .quick-card h3 { margin: 0 0 7px; font-size: 17px; }
-    .quick-card p { margin: 0 0 14px; color: var(--muted); font-size: 13px; line-height: 1.6; }
-    .quick-time-row, .template-card-row { display: flex; flex-wrap: wrap; gap: 8px; }
-    .quick-time-row .button, .template-card-row .button { flex: 1 1 118px; }
     .route-item {
       display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px;
       align-items: center; padding: 18px 20px;
@@ -516,13 +508,17 @@
     .sound-options .field { margin: 0; }
     .sound-options .button { min-height: 44px; white-space: nowrap; }
     .task-head {
-      display: grid; grid-template-columns: 34px minmax(0,1fr) 78px 70px 68px 36px;
+      display: grid; grid-template-columns: 34px minmax(0,1fr) 86px 96px 68px 36px;
       gap: 7px; padding: 0 9px 6px; color: var(--muted); font-size: 11px; font-weight: 800;
     }
     .task-head span:nth-child(1), .task-head span:nth-child(5), .task-head span:nth-child(6) { text-align: center; }
     .type-pill {
       display: inline-flex; padding: 4px 8px; border-radius: 999px;
       color: var(--brand-dark); background: var(--brand-soft); font-size: 11px; font-weight: 800;
+    }
+    .category-pill {
+      display: inline-flex; align-items: center; max-width: 100%; padding: 4px 8px; border-radius: 999px;
+      color: #175cd3; background: #eff6ff; font-size: 11px; font-weight: 800;
     }
     .compact-route { display: grid; gap: 7px; margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--line); text-align: left; }
     .compact-task {
@@ -537,6 +533,16 @@
     .dialog-actions-stack { display: grid; gap: 9px; margin-top: 20px; }
     .dialog-actions-stack .button { width: 100%; }
     .template-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 14px; }
+    .route-helper-card {
+      margin: 8px 0 16px; padding: 12px 14px; border: 1px solid var(--line);
+      border-radius: 8px; color: var(--muted); background: #fff; font-size: 12px; line-height: 1.55;
+    }
+    .route-helper-card strong { display: block; margin-bottom: 3px; color: var(--ink); font-size: 13px; }
+    .category-control {
+      display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 9px; align-items: end;
+      margin: 0 0 18px;
+    }
+    .category-control .field { margin: 0; }
     .split-panel {
       margin: 4px 0 20px; padding: 16px; border: 1px solid #b9ded9;
       border-radius: 8px; background: #f0f9f7;
@@ -553,7 +559,7 @@
     .split-result { min-height: 20px; margin: 10px 0 0 !important; color: var(--brand-dark) !important; font-weight: 700; }
     .station-editor { display: grid; gap: 9px; margin-top: 10px; }
     .station-row {
-      display: grid; grid-template-columns: 34px minmax(0, 1fr) 78px 70px 68px 36px; gap: 7px; align-items: center;
+      display: grid; grid-template-columns: 34px minmax(0, 1fr) 86px 96px 68px 36px; gap: 7px; align-items: center;
       padding: 9px; border: 1px solid var(--line); border-radius: 7px; background: var(--soft);
     }
     .station-index {
@@ -563,6 +569,16 @@
     .station-row input, .station-row select { min-width: 0; min-height: 40px; padding: 8px; border: 1px solid #cbd5db; border-radius: 6px; background: #fff; }
     .task-field { display: grid; gap: 3px; min-width: 0; }
     .task-field small { display: none; color: var(--muted); font-size: 10px; font-weight: 800; }
+    .task-title-field input { min-height: 44px; font-size: 15px; font-weight: 800; }
+    .task-split-field {
+      min-width: 0; padding: 7px; border: 1px solid #cfe8e4; border-radius: 7px; background: #fff;
+    }
+    .task-split-field small { display: block; color: var(--brand-dark); }
+    .task-split-input-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 5px; align-items: center; }
+    .task-split-input-row input { text-align: center; }
+    .task-split-input-row span {
+      min-width: 38px; color: var(--muted); font-size: 11px; font-weight: 800; white-space: nowrap;
+    }
     .job-order-controls { display: flex; gap: 3px; }
     .job-order-button {
       width: 31px; height: 36px; padding: 0; border: 1px solid var(--line);
@@ -610,23 +626,25 @@
       .metric + .metric { border-top: 0; border-left: 1px solid var(--line); }
       .metric strong { font-size: 21px; }
       .route-item { grid-template-columns: 1fr; }
-      .quick-actions { grid-template-columns: 1fr; }
       .route-item .button-row { justify-content: flex-start; }
       .history-grid { grid-template-columns: 1fr; }
       .history-filter-row { grid-template-columns: 1fr; }
       .settings-summary { grid-template-columns: 1fr; }
       .settings-choice-grid { grid-template-columns: 1fr; }
       .settings-select-row { grid-template-columns: 1fr; }
+      .category-control { grid-template-columns: 1fr; }
       .history-tab { flex: 0 0 auto; }
       .result-grid, .analysis-summary { grid-template-columns: 1fr; }
       .result-wide { grid-column: auto; }
       .timeline-item { grid-template-columns: 55px minmax(0,1fr); }
       .timeline-item > strong { grid-column: 2; }
-      .station-row { grid-template-columns: 30px minmax(0, 1fr) 70px 62px; padding: 7px; gap: 5px; }
+      .station-row { grid-template-columns: 30px minmax(0, 1fr) 74px; padding: 8px; gap: 6px; align-items: end; }
       .task-head { display: none; }
       .task-field small { display: block; }
-      .station-row .job-order-controls { grid-column: 2 / 3; }
-      .station-row .remove-station { grid-column: 4 / 5; grid-row: 2; }
+      .station-row .task-title-field { grid-column: 2 / 4; }
+      .station-row .task-split-field { grid-column: 2 / 3; }
+      .station-row .job-order-controls { grid-column: 3 / 4; justify-content: flex-end; }
+      .station-row .remove-station { grid-column: 1 / 2; grid-row: 3; }
       .mobile-nav {
         position: fixed; z-index: 30; right: 0; bottom: 0; left: 0;
         display: grid; grid-template-columns: repeat(5, 1fr);
@@ -689,10 +707,10 @@
     <div class="layout">
       <aside class="sidebar">
         <nav class="nav" aria-label="メインメニュー">
-          <button class="nav-button is-active" type="button" data-view="home"><span class="nav-icon">⌂</span><span>今日やること</span></button>
+          <button class="nav-button is-active" type="button" data-view="home"><span class="nav-icon">⌂</span><span>今日のルート</span></button>
           <button class="nav-button" type="button" data-view="focus"><span class="nav-icon">◎</span><span>集中</span></button>
           <button class="nav-button" type="button" data-view="history"><span class="nav-icon">▥</span><span>記録</span></button>
-          <button class="nav-button" type="button" data-view="archive"><span class="nav-icon">✓</span><span>完了したルート</span></button>
+          <button class="nav-button" type="button" data-view="archive"><span class="nav-icon">✓</span><span>到着したルート</span></button>
           <button class="nav-button" type="button" data-view="settings"><span class="nav-icon">⚙</span><span>設定</span></button>
         </nav>
         <p class="privacy-note">タスク内容と記録は、この端末の中だけに保存されます。アカウント登録はありません。</p>
@@ -720,8 +738,8 @@
           <div class="page-heading">
             <div>
               <p class="eyebrow">Progress</p>
-              <h2 id="historyTitle">完了記録</h2>
-              <p class="lead">完璧さではなく、完了したステップと集中時間を記録します。</p>
+              <h2 id="historyTitle">進んだ記録</h2>
+              <p class="lead">完璧さではなく、完了したステップを記録します。</p>
             </div>
           </div>
           <div id="historyContent"></div>
@@ -730,9 +748,9 @@
         <section id="archiveView" class="view" aria-labelledby="archiveTitle">
           <div class="page-heading">
             <div>
-              <p class="eyebrow">Completed routes</p>
-              <h2 id="archiveTitle">完了したルート</h2>
-              <p class="lead">最後まで進んだルートを保管し、必要なときにもう一度使えます。</p>
+              <p class="eyebrow">Arrived routes</p>
+              <h2 id="archiveTitle">到着したルート</h2>
+              <p class="lead">ゴールまで進んだルートを保管し、必要なときにもう一度使えます。</p>
             </div>
           </div>
           <div id="archiveContent"></div>
@@ -773,21 +791,27 @@
           <label for="routeTitleInput">ルート名／達成したいゴール</label>
           <input id="routeTitleInput" required maxlength="80" placeholder="例：会議資料を完成させる">
         </div>
-        <div class="field">
-          <label for="routeCategoryInput">カテゴリ</label>
-          <select id="routeCategoryInput">
-            <option value="work">仕事</option>
-            <option value="study">勉強</option>
-            <option value="life">暮らし</option>
-          </select>
-        </div>
         <div class="template-row" style="justify-content:flex-start;margin:0 0 18px">
           <button class="button ghost" type="button" data-template="document">資料作成</button>
           <button class="button ghost" type="button" data-template="study">勉強</button>
           <button class="button ghost" type="button" data-template="cleanup">片づけ</button>
-          <button class="button ghost" type="button" data-template="admin">事務作業</button>
+        </div>
+        <div class="category-control">
+          <div class="field">
+            <label for="routeCategoryInput">カテゴリ</label>
+            <input id="routeCategoryInput" list="categoryOptions" maxlength="24" placeholder="例：仕事">
+            <datalist id="categoryOptions">
+              <option value="仕事"></option>
+              <option value="学習"></option>
+              <option value="生活"></option>
+              <option value="毎日"></option>
+              <option value="プロジェクト"></option>
+            </datalist>
+          </div>
+          <div class="route-helper-card" style="margin:0"><strong>整理用</strong>ルートを探しやすくする分類です。タイマーや進捗には影響しません。</div>
         </div>
         <span class="field-label">このルートの使い方</span>
+        <div class="route-helper-card"><strong>保存後の扱いを決めます</strong>今回だけ終わらせる作業は「完了まで継続」、日報や朝の準備など何度も使う型は「繰り返し使う」が向いています。</div>
         <div class="choice-grid">
           <label class="choice-card"><input type="radio" name="routeType" value="repeat"><span><strong>繰り返し使う</strong><small>完了後、「もう一度使う」で新しい実行を始めます。</small></span></label>
           <label class="choice-card"><input type="radio" name="routeType" value="continuous" checked><span><strong>完了まで継続する</strong><small>タスクを追加・編集しても進捗を引き継げます。</small></span></label>
@@ -812,7 +836,7 @@
         </section>
         <div>
           <span class="field-label">このルートで行うタスク</span>
-          <p class="lead" style="font-size:13px;margin-top:5px">タスク名、時間、ステップ数を設定します。</p>
+          <p class="lead" style="font-size:13px;margin-top:5px">タスク名を優先して表示し、分割方法は右側の小さな欄で設定します。</p>
           <div class="task-head" aria-hidden="true"><span>順</span><span>タスク名</span><span>時間</span><span>ステップ</span><span>並替</span><span>削除</span></div>
           <div id="stationEditor" class="station-editor"></div>
           <button class="button ghost" type="button" data-action="add-station" style="margin-top:10px">＋ タスクを追加</button>
@@ -1033,7 +1057,7 @@
           routes: [{
             id: "example-route",
             title: "提案書を完成させる",
-            category: "work",
+            category: "仕事",
             deadline: "",
             progressIndex: 0,
             stationElapsed: 0,
@@ -1115,8 +1139,8 @@
         loaded.settings.focusLastView = loaded.settings.focusLastView === "route" ? "route" : "task";
         var stationIdMigrations = {};
         loaded.routes.forEach(function (route) {
+          route.category = typeof route.category === "string" ? route.category : "";
           route.routeType = route.routeType === "repeat" ? "repeat" : "continuous";
-          route.category = ["work", "study", "life"].includes(route.category) ? route.category : "work";
           route.runId = route.runId || uid();
           route.runNumber = Number(route.runNumber) || 1;
           route.notificationMode = ["sound", "haptic", "both", "none"].includes(route.notificationMode)
@@ -1390,24 +1414,10 @@
         return Math.max(0, Number(item.actualElapsedSeconds || 0)) / 60;
       }
 
-      function routeActualMinutes(route) {
-        return runHistory(route).reduce(function (sum, item) { return sum + historyMinutes(item); }, 0);
-      }
-
-      function categoryLabel(value) {
-        if (value === "study") return "勉強";
-        if (value === "life") return "暮らし";
-        return "仕事";
-      }
-
       function recordPartialProgress(route, reason) {
         var station = currentStation(route);
         var actualElapsedSeconds = Math.max(0, Number(route && route.stationActualElapsed) || 0);
         if (!route || !station || actualElapsedSeconds <= 0) return;
-        var latestPartial = state.history.slice().reverse().find(function (item) {
-          return item.routeId === route.id && item.runId === route.runId && item.stationId === station.id && item.completed === false;
-        });
-        if (latestPartial && actualElapsedSeconds <= Number(latestPartial.actualElapsedSeconds || 0) + 1) return;
         state.history.push({
           id: uid(),
           routeId: route.id,
@@ -1545,6 +1555,10 @@
         return new Intl.DateTimeFormat("ja-JP", { month: "numeric", day: "numeric", weekday: "short" }).format(date);
       }
 
+      function routeCategoryLabel(route) {
+        return route && String(route.category || "").trim() || "未分類";
+      }
+
       function updateDeadlineDisplay() {
         var dateValue = routeDeadlineInput.value;
         deadlineSummary.classList.remove("is-empty", "is-sunday", "is-saturday");
@@ -1599,21 +1613,6 @@
         if (target) target.classList.add("is-active");
       }
 
-      function quickActionsHtml() {
-        return '<section class="quick-actions" aria-label="すぐ使う">' +
-          '<article class="card quick-card"><h3>すぐ始める</h3><p>ルート作成なしで、短い集中時間をすぐ開始できます。</p><div class="quick-time-row">' +
-          '<button class="button primary" type="button" data-action="quick-start" data-minutes="15">15分だけ集中</button>' +
-          '<button class="button secondary" type="button" data-action="quick-start" data-minutes="5">5分</button>' +
-          '<button class="button secondary" type="button" data-action="quick-start" data-minutes="25">25分</button>' +
-          '</div></article>' +
-          '<article class="card quick-card"><h3>テンプレート</h3><p>よく使う形からルートを作成できます。</p><div class="template-card-row">' +
-          '<button class="button ghost" type="button" data-template="document">資料作成</button>' +
-          '<button class="button ghost" type="button" data-template="study">勉強</button>' +
-          '<button class="button ghost" type="button" data-template="cleanup">片づけ</button>' +
-          '<button class="button ghost" type="button" data-template="admin">事務作業</button>' +
-          '</div></article></section>';
-      }
-
       function renderHome() {
         var route = activeRoute();
         var activeRoutes = state.routes.filter(function (item) { return !item.archived; });
@@ -1622,7 +1621,6 @@
         var todayStations = todayHistory.length;
         var main = "";
         homeTopActions.innerHTML = "";
-        main += quickActionsHtml();
         if (route) {
           var station = currentStation(route);
           var finished = route.progressIndex >= route.stations.length;
@@ -1633,28 +1631,27 @@
           var canResume = route.stationElapsed > 0 || (homeProgress && homeProgress.completed > 0);
           var startAction = finished && route.routeType === "repeat" ? "restart-route" : "start-active";
           var startDisabled = finished && route.routeType !== "repeat";
-          var startLabel = finished && route.routeType === "repeat" ? "もう一度使う" : canResume ? "前回の続きから再開" : "開始";
-          homeTopActions.innerHTML = (finished ? '<button class="button primary" type="button" data-action="archive-route" data-id="' + escapeHtml(route.id) + '">完了したルートへ保管</button>' : '<button class="button primary" type="button" data-action="' + startAction + '"' + (startDisabled ? " disabled" : "") + '>' + startLabel + '</button>') + '<button class="button secondary" type="button" data-action="edit-route" data-id="' + escapeHtml(route.id) + '">ルートを編集</button>';
+          var startLabel = finished && route.routeType === "repeat" ? "もう一度使う" : canResume ? "続きから再開" : "はじめる";
+          homeTopActions.innerHTML = (finished ? '<button class="button primary" type="button" data-action="archive-route" data-id="' + escapeHtml(route.id) + '">到着したルートへ保管</button>' : '<button class="button primary" type="button" data-action="' + startAction + '"' + (startDisabled ? " disabled" : "") + '>' + startLabel + '</button>') + '<button class="button secondary" type="button" data-action="edit-route" data-id="' + escapeHtml(route.id) + '">ルートを編集</button>';
           main += '<div class="overview"><article class="card next-card">';
-          main += '<div class="next-label"><span class="status-pill">' + (finished ? "すべて完了" : "次のステップ") + '</span><span class="type-pill">' + categoryLabel(route.category) + '</span></div>';
+          main += '<div class="next-label"><span class="status-pill">' + (finished ? "ゴール到着" : "次のステップ") + '</span><span class="type-pill">' + (route.routeType === "repeat" ? "繰り返し" : "継続") + '</span><span class="category-pill">' + escapeHtml(routeCategoryLabel(route)) + '</span></div>';
           main += '<h3>' + escapeHtml(finished ? "このルートは完了しました" : stationJobName(station)) + '</h3>';
           if (finished) main += '<p class="next-station">新しいルートを作るか、別のルートを選びましょう。</p>';
           main += stationLine(route, true);
-          main += '<div class="button-row">' + (finished ? '<button class="button primary" type="button" data-action="archive-route" data-id="' + escapeHtml(route.id) + '">完了したルートへ保管</button>' : '<button class="button primary" type="button" data-action="' + startAction + '"' + (startDisabled ? " disabled" : "") + '>' + startLabel + '</button>');
+          main += '<div class="button-row">' + (finished ? '<button class="button primary" type="button" data-action="archive-route" data-id="' + escapeHtml(route.id) + '">到着したルートへ保管</button>' : '<button class="button primary" type="button" data-action="' + startAction + '"' + (startDisabled ? " disabled" : "") + '>' + startLabel + '</button>');
           main += '<button class="button secondary" type="button" data-action="edit-route" data-id="' + escapeHtml(route.id) + '">ルートを編集</button></div></article>';
           main += '<aside class="card summary-card"><div class="metric"><span>ルートの進捗</span><strong>' + routePercent(route) + '%</strong></div>';
           main += '<div class="metric"><span>残りの目安</span><strong>' + displayMinutes(remainingMinutes(route)) + '<small style="font-size:12px"> 分</small></strong></div>';
-          main += '<div class="metric"><span>かかった時間</span><strong>' + displayMinutes(routeActualMinutes(route)) + '<small style="font-size:12px"> 分</small></strong></div>';
           main += '<div class="metric"><span>今日完了したステップ</span><strong>' + todayStations + '<small style="font-size:12px"> ステップ</small></strong></div></aside></div>';
         } else {
-          main += '<div class="card empty-state"><strong>まだルートがありません</strong><p>テンプレートから始めるか、自由にルートを作成できます。</p><button class="button primary" type="button" data-action="new-route">最初のルートを作る</button></div>';
+          main += '<div class="card empty-state"><strong>まだルートがありません</strong><p>テンプレートから始めるか、自由にルートを作成できます。</p><button class="button primary" type="button" data-action="new-route">最初のルートを作る</button><div class="template-row"><button class="button ghost" data-template="document">資料を作る</button><button class="button ghost" data-template="study">勉強する</button><button class="button ghost" data-template="cleanup">片づける</button></div></div>';
         }
 
         main += '<div class="section-title"><h3>保存したルート</h3><span style="color:var(--muted);font-size:13px">' + activeRoutes.length + '件</span></div>';
         if (activeRoutes.length) {
           main += '<div class="route-list">' + activeRoutes.map(function (item, index) {
             var completed = item.progressIndex >= item.stations.length;
-            return '<article class="card route-item"><div><h4>' + escapeHtml(item.title) + ' <span class="type-pill">' + categoryLabel(item.category) + '</span></h4><div class="route-meta"><span>' + (item.jobs ? item.jobs.length + 'タスク・' : '') + item.stations.length + 'ステップ</span><span>合計 ' + displayMinutes(totalMinutes(item)) + '分</span><span>かかった時間 ' + displayMinutes(routeActualMinutes(item)) + '分</span><span>' + formatDate(item.deadline) + '</span></div><div class="route-progress"><span style="width:' + routePercent(item) + '%"></span></div></div><div class="button-row"><div class="order-controls" aria-label="' + escapeHtml(item.title) + 'の並び順"><button class="order-button" type="button" data-action="move-route-up" data-id="' + escapeHtml(item.id) + '" aria-label="上へ移動" title="上へ移動"' + (index === 0 ? " disabled" : "") + '>↑</button><button class="order-button" type="button" data-action="move-route-down" data-id="' + escapeHtml(item.id) + '" aria-label="下へ移動" title="下へ移動"' + (index === activeRoutes.length - 1 ? " disabled" : "") + '>↓</button></div><button class="button ghost" type="button" data-action="select-route" data-id="' + escapeHtml(item.id) + '">選ぶ</button><button class="button secondary" type="button" data-action="edit-route" data-id="' + escapeHtml(item.id) + '">編集</button><button class="button ghost" type="button" data-action="duplicate-route" data-id="' + escapeHtml(item.id) + '">複製</button>' + (completed ? '<button class="button ghost" type="button" data-action="archive-route" data-id="' + escapeHtml(item.id) + '">保管</button>' : "") + '<button class="button danger" type="button" data-action="delete-route" data-id="' + escapeHtml(item.id) + '">削除</button></div></article>';
+            return '<article class="card route-item"><div><h4>' + escapeHtml(item.title) + ' <span class="type-pill">' + (item.routeType === "repeat" ? "繰り返し" : "継続") + '</span> <span class="category-pill">' + escapeHtml(routeCategoryLabel(item)) + '</span></h4><div class="route-meta"><span>' + (item.jobs ? item.jobs.length + 'タスク・' : '') + item.stations.length + 'ステップ</span><span>合計 ' + displayMinutes(totalMinutes(item)) + '分</span><span>' + formatDate(item.deadline) + '</span></div><div class="route-progress"><span style="width:' + routePercent(item) + '%"></span></div></div><div class="button-row"><div class="order-controls" aria-label="' + escapeHtml(item.title) + 'の並び順"><button class="order-button" type="button" data-action="move-route-up" data-id="' + escapeHtml(item.id) + '" aria-label="上へ移動" title="上へ移動"' + (index === 0 ? " disabled" : "") + '>↑</button><button class="order-button" type="button" data-action="move-route-down" data-id="' + escapeHtml(item.id) + '" aria-label="下へ移動" title="下へ移動"' + (index === activeRoutes.length - 1 ? " disabled" : "") + '>↓</button></div><button class="button ghost" type="button" data-action="select-route" data-id="' + escapeHtml(item.id) + '">選ぶ</button><button class="button secondary" type="button" data-action="edit-route" data-id="' + escapeHtml(item.id) + '">編集</button><button class="button ghost" type="button" data-action="duplicate-route" data-id="' + escapeHtml(item.id) + '">複製</button>' + (completed ? '<button class="button ghost" type="button" data-action="archive-route" data-id="' + escapeHtml(item.id) + '">保管</button>' : "") + '<button class="button danger" type="button" data-action="delete-route" data-id="' + escapeHtml(item.id) + '">削除</button></div></article>';
           }).join("") + '</div>';
         } else {
           main += '<div class="card empty-state">ルートを作成すると、ここに保存されます。</div>';
@@ -1665,7 +1662,7 @@
       function renderFocus() {
         var route = activeRoute();
         if (!route || route.progressIndex >= route.stations.length) {
-          focusContent.innerHTML = '<div class="card empty-state"><strong>集中するステップを選びましょう</strong><p>今日やることから、進めたいタスクを選択してください。</p><button class="button primary" type="button" data-action="go-home">今日やることへ</button></div>';
+          focusContent.innerHTML = '<div class="card empty-state"><strong>集中するステップを選びましょう</strong><p>今日のルートから、進めたいタスクを選択してください。</p><button class="button primary" type="button" data-action="go-home">今日のルートへ</button></div>';
           return;
         }
         var station = currentStation(route);
@@ -1695,8 +1692,7 @@
           if (route.awaitingNextTaskIndex !== null) {
             html += '<span class="status-pill">タスク完了</span><button class="button primary" type="button" data-action="next-task"' + (currentTaskIndex >= groups.length - 1 ? " disabled" : "") + '>次のタスクへ進む</button>';
           } else {
-            html += '<button class="button primary" type="button" data-action="toggle-timer">' + (route.running ? "一時停止" : route.stationElapsed > 0 || groupStatus.completed > 0 ? "再開" : "開始") + '</button>';
-            html += '<button class="button ghost" type="button" data-action="end-today">今日はここまで</button>';
+            html += '<button class="button primary" type="button" data-action="toggle-timer">' + (route.running ? "一時停止" : route.stationElapsed > 0 || groupStatus.completed > 0 ? "再開する" : "集中を始める") + '</button>';
           }
           if (state.settings.focusDisplayMode === "switch") html += '<button class="button secondary" type="button" data-action="focus-display-task">現在のタスクを大きく見る</button>';
           html += '<span class="status-pill">残りの目安 ' + displayMinutes(remainingMinutes(route)) + '分</span></div>';
@@ -1710,14 +1706,13 @@
         if (route.awaitingNextTaskIndex !== null) {
           html += '<div class="task-complete-status" role="status">✓ タスク完了</div>';
           html += '<button class="button primary complete-primary" type="button" data-action="next-task" aria-label="次のタスクへ進む"' + (currentTaskIndex >= groups.length - 1 ? " disabled" : "") + '>次のタスクへ進む</button>';
-          html += '<button class="button secondary" type="button" data-action="previous-task" aria-label="前のタスクに戻る"' + (currentTaskIndex <= 0 ? " disabled" : "") + '>前に戻る</button>';
+          html += '<button class="button secondary" type="button" data-action="previous-task" aria-label="前のタスクに戻る"' + (currentTaskIndex <= 0 ? " disabled" : "") + '>前のタスク</button>';
           html += '<button class="button add-repeat" type="button" data-action="add-task-repeat" aria-label="このタスクにもう1回分追加">＋ もう1回分追加</button>';
           html += '<button class="button danger complete-danger" type="button" data-action="reset-task" aria-label="このタスクをやり直す">このタスクをやり直す</button>';
         } else {
-          html += '<button class="button primary" type="button" data-action="toggle-timer">' + (route.running ? "一時停止" : route.stationElapsed > 0 || groupStatus.completed > 0 ? "再開" : "開始") + '</button>';
+          html += '<button class="button primary" type="button" data-action="toggle-timer">' + (route.running ? "一時停止" : route.stationElapsed > 0 || groupStatus.completed > 0 ? "再開する" : "集中を始める") + '</button>';
           html += '<button class="button forward" type="button" data-action="next-task" aria-label="次のタスクに行く"' + (currentTaskIndex >= groups.length - 1 ? " disabled" : "") + '>次のタスク</button>';
-          html += '<button class="button secondary" type="button" data-action="previous-task" aria-label="前のタスクに戻る"' + (currentTaskIndex <= 0 ? " disabled" : "") + '>前に戻る</button>';
-          html += '<button class="button ghost" type="button" data-action="end-today">今日はここまで</button>';
+          html += '<button class="button secondary" type="button" data-action="previous-task" aria-label="前のタスクに戻る"' + (currentTaskIndex <= 0 ? " disabled" : "") + '>前のタスク</button>';
           html += '<button class="button danger" type="button" data-action="reset-task" aria-label="このタスクをやり直す">このタスクをやり直す</button>';
         }
         html += '</div>';
@@ -1813,7 +1808,7 @@
         return '<div class="card station-history">' + page.items.map(function (item) {
           var partial = item.completed === false;
           var date = new Intl.DateTimeFormat("ja-JP", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(item.completedAt));
-          return '<article class="arrival-item' + (partial ? " is-partial" : "") + '"><span class="arrival-dot">' + (partial ? "…" : "✓") + '</span><div><h4>' + escapeHtml(item.stationName) + '</h4><p>' + date + '・' + (partial ? "途中まで" : item.routeCompleted ? "すべて完了" : "ステップ完了") + (item.memo ? "・" + escapeHtml(item.memo) : "") + '</p></div><div><strong class="arrival-time">' + displayMinutes(historyMinutes(item)) + '分</strong><br><button class="history-edit-button" type="button" data-action="edit-history" data-id="' + escapeHtml(item.id) + '">編集</button></div></article>';
+          return '<article class="arrival-item' + (partial ? " is-partial" : "") + '"><span class="arrival-dot">' + (partial ? "…" : "✓") + '</span><div><h4>' + escapeHtml(item.stationName) + '</h4><p>' + date + '・' + (partial ? "途中まで" : item.routeCompleted ? "ゴール到着" : "ステップ完了") + (item.memo ? "・" + escapeHtml(item.memo) : "") + '</p></div><div><strong class="arrival-time">' + displayMinutes(historyMinutes(item)) + '分</strong><br><button class="history-edit-button" type="button" data-action="edit-history" data-id="' + escapeHtml(item.id) + '">編集</button></div></article>';
         }).join("") + '</div>' + historyPaginationHtml(page);
       }
 
@@ -1853,7 +1848,7 @@
         return '<div class="timeline-list">' + page.items.map(function (item) {
           var clock = new Intl.DateTimeFormat("ja-JP", { hour: "2-digit", minute: "2-digit" }).format(new Date(item.completedAt));
           var day = new Intl.DateTimeFormat("ja-JP", { month: "numeric", day: "numeric", weekday: "short" }).format(new Date(item.completedAt));
-          var status = item.completed === false ? "中断" : item.routeCompleted ? "すべて完了" : "完了";
+          var status = item.completed === false ? "中断" : item.routeCompleted ? "ゴール到着" : "完了";
           return '<article class="card timeline-item"><time class="timeline-clock">' + clock + '</time><div><h4>' + escapeHtml(item.stationName) + '</h4><p>' + day + '・' + status + (item.memo ? "・" + escapeHtml(item.memo) : "") + '</p></div><div><strong>' + displayMinutes(historyMinutes(item)) + '分</strong><br><button class="history-edit-button" type="button" data-action="edit-history" data-id="' + escapeHtml(item.id) + '">編集</button></div></article>';
         }).join("") + '</div>' + historyPaginationHtml(page);
       }
@@ -1864,7 +1859,7 @@
         var todayMinutes = todayItems.reduce(function (sum, item) { return sum + historyMinutes(item); }, 0);
         var goals = items.filter(function (item) { return item.routeCompleted; }).length;
         var remaining = route ? Math.max(0, route.stations.length - route.progressIndex) : 0;
-        return '<div class="result-grid"><article class="card result-card"><span>今日完了したステップ</span><strong>' + completed + '<small style="font-size:13px"> ステップ</small></strong></article><article class="card result-card"><span>今日の実際の集中時間</span><strong>' + displayMinutes(todayMinutes) + '<small style="font-size:13px"> 分</small></strong></article><article class="card result-card"><span>完了したルート</span><strong>' + goals + '<small style="font-size:13px"> 件</small></strong></article><article class="card result-card"><span>ゴールまでの残り</span><strong>' + remaining + '<small style="font-size:13px"> ステップ</small></strong></article><article class="card result-card result-wide"><span>現在のルート</span><strong style="font-size:22px">' + (route ? escapeHtml(route.title) : "ルート未選択") + '</strong></article></div>';
+        return '<div class="result-grid"><article class="card result-card"><span>今日進んだステップ</span><strong>' + completed + '<small style="font-size:13px"> ステップ</small></strong></article><article class="card result-card"><span>今日の実際の集中時間</span><strong>' + displayMinutes(todayMinutes) + '<small style="font-size:13px"> 分</small></strong></article><article class="card result-card"><span>到着したゴール</span><strong>' + goals + '<small style="font-size:13px"> 件</small></strong></article><article class="card result-card"><span>ゴールまでの残り</span><strong>' + remaining + '<small style="font-size:13px"> ステップ</small></strong></article><article class="card result-card result-wide"><span>現在のルート</span><strong style="font-size:22px">' + (route ? escapeHtml(route.title) : "ルート未選択") + '</strong></article></div>';
       }
 
       function renderAnalysisHistory(items) {
@@ -1879,7 +1874,7 @@
         });
         var rows = Object.keys(byTask).sort(function (a, b) { return byTask[b] - byTask[a]; });
         var maximum = rows.reduce(function (max, name) { return Math.max(max, byTask[name]); }, 0) || 1;
-        return '<div class="analysis-summary"><article class="card"><span>予定時間</span><strong>' + displayMinutes(planned) + '分</strong></article><article class="card"><span>実際の時間</span><strong>' + displayMinutes(actual) + '分</strong></article><article class="card"><span>予定との差</span><strong>' + (difference > 0 ? "+" : "") + displayMinutes(difference) + '分</strong></article></div><div class="analysis-list">' + rows.map(function (name) {
+        return '<div class="analysis-summary"><article class="card"><span>予定時間</span><strong>' + displayMinutes(planned) + '分</strong></article><article class="card"><span>実測時間</span><strong>' + displayMinutes(actual) + '分</strong></article><article class="card"><span>予定との差</span><strong>' + (difference > 0 ? "+" : "") + displayMinutes(difference) + '分</strong></article></div><div class="analysis-list">' + rows.map(function (name) {
           var value = byTask[name];
           return '<article class="card analysis-row"><div class="analysis-row-head"><strong>' + escapeHtml(name) + '</strong><span>' + displayMinutes(value) + '分</span></div><div class="analysis-bar"><span style="width:' + Math.round(value / maximum * 100) + '%"></span></div></article>';
         }).join("") + '</div>';
@@ -1899,11 +1894,11 @@
         var total = currentRouteHistory.reduce(function (sum, item) { return sum + historyMinutes(item); }, 0);
         var completedSteps = currentRouteHistory.filter(function (item) { return item.completed !== false; }).length;
         var goals = currentRouteHistory.filter(function (item) { return item.routeCompleted === true; }).length;
-        var html = '<div class="history-grid"><div class="card history-metric"><span>表示中の記録</span><strong>' + currentRouteHistory.length + '件</strong></div><div class="card history-metric"><span>実際の集中時間</span><strong id="historyTotalValue">' + displayMinutes(total) + '分</strong></div><div class="card history-metric"><span>完了したステップ</span><strong>' + completedSteps + '件</strong></div><div class="card history-metric"><span>完了したルート</span><strong>' + goals + '件</strong></div></div>';
+        var html = '<div class="history-grid"><div class="card history-metric"><span>表示中の記録</span><strong>' + currentRouteHistory.length + '件</strong></div><div class="card history-metric"><span>実際の集中時間</span><strong id="historyTotalValue">' + displayMinutes(total) + '分</strong></div><div class="card history-metric"><span>完了したステップ</span><strong>' + completedSteps + '件</strong></div><div class="card history-metric"><span>到着したゴール</span><strong>' + goals + '件</strong></div></div>';
         html += historyFiltersHtml(currentRouteHistory);
         html += historyTabs();
         html += '<div class="history-panel" role="tabpanel">' + historyModeContent(currentRouteHistory, route) + '</div>';
-        html += '<details class="card history-help"><summary>記録される内容</summary><ul><li>実施日時と実際の集中時間</li><li>設定した予定時間</li><li>ルート名、タスク名、ステップ番号</li><li>完了、中断、すべて完了の状態</li><li>記録編集で追加したメモ</li></ul></details>';
+        html += '<details class="card history-help"><summary>記録される内容</summary><ul><li>実施日時と実際の集中時間</li><li>設定した予定時間</li><li>ルート名、タスク名、ステップ番号</li><li>完了、中断、ゴール到着の状態</li><li>記録編集で追加したメモ</li></ul></details>';
         html += '<div class="history-actions"><button class="button secondary" type="button" data-action="print-history">表示中の記録を印刷・PDF保存</button><button class="button ghost" type="button" data-action="clear-history-filters">絞り込みを解除</button></div>';
         historyContent.innerHTML = html;
       }
@@ -1919,7 +1914,7 @@
       function renderArchive() {
         var archivedRoutes = state.routes.filter(function (route) { return route.archived; });
         if (!archivedRoutes.length) {
-          archiveContent.innerHTML = '<div class="card empty-state"><strong>完了したルートはまだありません</strong><p>最後まで進んだルートを保管すると、ここに表示されます。</p></div>';
+          archiveContent.innerHTML = '<div class="card empty-state"><strong>到着したルートはまだありません</strong><p>ゴールに到着したルートを保管すると、ここに表示されます。</p></div>';
           return;
         }
         archiveContent.innerHTML = '<div class="route-list">' + archivedRoutes.slice().sort(function (a, b) {
@@ -1930,7 +1925,7 @@
           var archivedDate = route.archivedAt
             ? new Intl.DateTimeFormat("ja-JP", { year: "numeric", month: "numeric", day: "numeric", weekday: "short" }).format(new Date(route.archivedAt))
             : "日時不明";
-          return '<article class="card route-item"><div><h4>' + escapeHtml(route.title) + ' <span class="status-pill">すべて完了</span></h4><div class="route-meta"><span>' + route.stations.length + 'ステップ</span><span>かかった時間 ' + displayMinutes(actualMinutes) + '分</span><span>' + archivedDate + 'に保管</span></div><div class="route-progress"><span style="width:100%"></span></div></div><div class="button-row"><button class="button secondary" type="button" data-action="restore-route" data-id="' + escapeHtml(route.id) + '">今日やることへ戻す</button><button class="button primary" type="button" data-action="reuse-route" data-id="' + escapeHtml(route.id) + '">もう一度使う</button><button class="button ghost" type="button" data-action="duplicate-route" data-id="' + escapeHtml(route.id) + '">複製</button><button class="button danger" type="button" data-action="delete-route" data-id="' + escapeHtml(route.id) + '">削除</button></div></article>';
+          return '<article class="card route-item"><div><h4>' + escapeHtml(route.title) + ' <span class="status-pill">ゴール到着</span> <span class="category-pill">' + escapeHtml(routeCategoryLabel(route)) + '</span></h4><div class="route-meta"><span>' + route.stations.length + 'ステップ</span><span>実際の集中 ' + displayMinutes(actualMinutes) + '分</span><span>' + archivedDate + 'に保管</span></div><div class="route-progress"><span style="width:100%"></span></div></div><div class="button-row"><button class="button secondary" type="button" data-action="restore-route" data-id="' + escapeHtml(route.id) + '">今日のルートへ戻す</button><button class="button primary" type="button" data-action="reuse-route" data-id="' + escapeHtml(route.id) + '">もう一度使う</button><button class="button ghost" type="button" data-action="duplicate-route" data-id="' + escapeHtml(route.id) + '">複製</button><button class="button danger" type="button" data-action="delete-route" data-id="' + escapeHtml(route.id) + '">削除</button></div></article>';
         }).join("") + '</div>';
       }
 
@@ -1952,7 +1947,7 @@
           '<section class="card settings-card"><h3>タイマー中の画面</h3><p>集中している間の表示と動きを調整します。</p>' +
           '<label class="setting-row"><span class="setting-row-text"><strong>画面を暗くしにくくする</strong><small>対応端末でタイマー中の画面スリープを抑えます。</small></span><span class="switch"><input type="checkbox" data-setting="wakeLockEnabled"' + (state.settings.wakeLockEnabled ? " checked" : "") + '><span class="switch-track"></span></span></label>' +
           '<label class="setting-row" style="margin-top:14px"><span class="setting-row-text"><strong>動きを少なくする</strong><small>画面切替や通知の動きを抑えます。</small></span><span class="switch"><input type="checkbox" data-setting="reduceMotion"' + (state.settings.reduceMotion ? " checked" : "") + '><span class="switch-track"></span></span></label></section>' +
-          '<section class="card settings-card"><h3>この端末のデータ</h3><p>ルート、途中の進捗、設定、記録、完了したルートをまとめて管理します。</p><div class="settings-summary"><div><span>ルート</span><strong>' + state.routes.length + '件</strong></div><div><span>記録</span><strong>' + state.history.length + '件</strong></div><div><span>最終記録</span><strong style="font-size:13px">' + latestText + '</strong></div></div><div class="settings-actions"><button class="button secondary" type="button" data-action="export-backup">バックアップを書き出す</button><button class="button secondary" type="button" data-action="import-backup">バックアップを読み込む</button><button class="button danger" type="button" data-action="delete-all-history">記録をすべて削除</button><button class="button danger" type="button" data-action="reset-all-data">すべてのデータを初期化</button></div></section>' +
+          '<section class="card settings-card"><h3>この端末のデータ</h3><p>ルート、途中の進捗、設定、記録、到着したルートをまとめて管理します。</p><div class="settings-summary"><div><span>ルート</span><strong>' + state.routes.length + '件</strong></div><div><span>記録</span><strong>' + state.history.length + '件</strong></div><div><span>最終記録</span><strong style="font-size:13px">' + latestText + '</strong></div></div><div class="settings-actions"><button class="button secondary" type="button" data-action="export-backup">バックアップを書き出す</button><button class="button secondary" type="button" data-action="import-backup">バックアップを読み込む</button><button class="button danger" type="button" data-action="delete-all-history">記録をすべて削除</button><button class="button danger" type="button" data-action="reset-all-data">すべてのデータを初期化</button></div></section>' +
           '<section class="card settings-card"><h3>使い方</h3><p>初回に表示される3ページの案内をもう一度確認できます。</p><button class="button ghost" type="button" data-action="show-onboarding">使い方を見る</button></section></div>';
         document.body.classList.toggle("reduce-motion", state.settings.reduceMotion === true);
       }
@@ -2004,7 +1999,7 @@
         updateHistoryDateDisplay();
         document.getElementById("historyTaskInput").value = String(item.stationName || "").replace(/\s+\d+\/\d+(?:（途中）)?$/, "");
         document.getElementById("historyMemoInput").value = item.memo || "";
-        var result = item.completed === false ? "中断" : item.routeCompleted ? "すべて完了" : "完了";
+        var result = item.completed === false ? "中断" : item.routeCompleted ? "ゴール到着" : "完了";
         document.getElementById("historyFixedValues").innerHTML = [
           ["ルート", item.routeTitle || "名称なし"],
           ["実際の時間", displayMinutes(historyMinutes(item)) + "分"],
@@ -2015,7 +2010,7 @@
         ].map(function (value) {
           return '<div><span>' + escapeHtml(value[0]) + '</span><strong>' + escapeHtml(value[1]) + '</strong></div>';
         }).join("");
-        document.getElementById("historyFixedInfo").textContent = "実際の時間、予定時間、ステップ、結果は、記録の正確性を保つため変更できません。";
+        document.getElementById("historyFixedInfo").textContent = "実測時間、予定時間、ステップ、結果は、記録の正確性を保つため変更できません。";
         historyEditorDialog.showModal();
       }
 
@@ -2146,7 +2141,7 @@
         document.getElementById("routeDialogTitle").textContent = route ? "ルートを編集" : "新しいルート";
         routeIdInput.value = route ? route.id : "";
         routeTitleInput.value = route ? route.title : "";
-        routeCategoryInput.value = route && ["work", "study", "life"].includes(route.category) ? route.category : "work";
+        routeCategoryInput.value = route ? route.category || "" : "";
         routeDeadlineInput.value = route ? route.deadline || "" : "";
         updateDeadlineDisplay();
         document.querySelectorAll('input[name="routeType"]').forEach(function (input) {
@@ -2183,7 +2178,7 @@
         var row = document.createElement("div");
         row.className = "station-row";
         row.dataset.jobId = job && job.id ? job.id : uid();
-        row.innerHTML = '<span class="station-index"></span><label class="task-field"><small>タスク名</small><input class="station-name-input" required maxlength="60" aria-label="タスク名" placeholder="例：資料を集める" value="' + escapeHtml(job && job.name ? job.name : "") + '"></label><label class="task-field"><small>時間（分）</small><input class="station-minutes-input" type="number" inputmode="decimal" min="0.01" max="600" step="any" required aria-label="タスクの時間（分）" value="' + escapeHtml(displayMinutes(job && job.minutes ? job.minutes : 10)) + '"></label><label class="task-field"><small>ステップ数</small><input class="job-split-count-input" type="number" inputmode="numeric" min="1" max="12" step="1" required aria-label="分割するステップ数" value="' + escapeHtml(job && job.splitCount ? job.splitCount : 1) + '"></label><div class="job-order-controls"><button class="job-order-button" type="button" data-action="move-job-up" aria-label="タスクを上へ移動" title="上へ移動">↑</button><button class="job-order-button" type="button" data-action="move-job-down" aria-label="タスクを下へ移動" title="下へ移動">↓</button></div><button class="remove-station" type="button" data-action="remove-station" aria-label="タスクを削除">×</button>';
+        row.innerHTML = '<span class="station-index"></span><label class="task-field task-title-field"><small>タスク名</small><input class="station-name-input" required maxlength="60" aria-label="タスク名" placeholder="例：資料を集める" value="' + escapeHtml(job && job.name ? job.name : "") + '"></label><label class="task-field"><small>時間</small><input class="station-minutes-input" type="number" inputmode="decimal" min="0.01" max="600" step="any" required aria-label="タスクの時間（分）" value="' + escapeHtml(displayMinutes(job && job.minutes ? job.minutes : 10)) + '"></label><label class="task-field task-split-field"><small>分割方法</small><span class="task-split-input-row"><input class="job-split-count-input" type="number" inputmode="numeric" min="1" max="12" step="1" required aria-label="分割するステップ数" value="' + escapeHtml(job && job.splitCount ? job.splitCount : 1) + '"><span>ステップ</span></span></label><div class="job-order-controls"><button class="job-order-button" type="button" data-action="move-job-up" aria-label="タスクを上へ移動" title="上へ移動">↑</button><button class="job-order-button" type="button" data-action="move-job-down" aria-label="タスクを下へ移動" title="下へ移動">↓</button></div><button class="remove-station" type="button" data-action="remove-station" aria-label="タスクを削除">×</button>';
         stationEditor.appendChild(row);
         refreshStationIndexes();
       }
@@ -2261,7 +2256,7 @@
         return {
           id: routeIdInput.value,
           title: routeTitleInput.value.trim(),
-          category: routeCategoryInput.value,
+          category: routeCategoryInput.value.trim(),
           deadline: routeDeadlineInput.value,
           routeType: document.querySelector('input[name="routeType"]:checked').value,
           notificationMode: (document.querySelector('input[name="notificationMode"]:checked') || {}).value || "both",
@@ -2889,87 +2884,17 @@
         showToast("新しい実行を開始しました");
       }
 
-      async function quickStart(minutes) {
-        var value = clamp(Math.round(Number(minutes) || 15), 1, 600);
-        var current = activeRoute();
-        if (current && current.running) {
-          tick();
-          current.running = false;
-          current.lastTimerUpdateAt = null;
-          stopLoop();
-        }
-        var jobId = uid();
-        var splitCount = value >= 25 ? 5 : value >= 10 ? Math.max(2, Math.round(value / 5)) : 1;
-        var route = {
-          id: uid(),
-          title: value + "分だけ集中",
-          category: "work",
-          deadline: "",
-          progressIndex: 0,
-          stationElapsed: 0,
-          stationActualElapsed: 0,
-          lastTimerUpdateAt: null,
-          running: false,
-          previousProgressIndex: null,
-          skippedTaskIds: [],
-          taskProgress: {},
-          taskRepeatUnits: {},
-          awaitingNextTaskIndex: null,
-          archived: false,
-          archivedAt: null,
-          createdAt: Date.now(),
-          routeType: "repeat",
-          runId: uid(),
-          runNumber: 1,
-          notificationMode: "both",
-          soundTiming: "job",
-          splitMode: "individual",
-          commonSplitCount: splitCount,
-          jobs: [{ id: jobId, name: "集中する", minutes: value, splitCount: splitCount }]
-        };
-        route.stations = route.jobs.flatMap(function (job) { return divideJobIntoStations(job, job.splitCount); });
-        state.routes.unshift(route);
-        state.activeRouteId = route.id;
-        state.currentView = "focus";
-        await prepareAudio();
-        route.running = true;
-        route.lastTimerUpdateAt = Date.now();
-        saveState();
-        render();
-        startLoop();
-        requestWakeLock();
-        showToast(value + "分の集中を開始しました");
-      }
-
-      function endToday() {
-        var route = activeRoute();
-        if (!route || route.progressIndex >= route.stations.length) return;
-        if (route.running) tick();
-        route = activeRoute();
-        if (!route) return;
-        route.running = false;
-        route.lastTimerUpdateAt = null;
-        recordPartialProgress(route, "end-today");
-        stopLoop();
-        releaseWakeLock();
-        state.currentView = "home";
-        saveState();
-        render();
-        showToast("今日はここまでとして記録しました");
-      }
-
       function applyTemplate(name) {
         var templates = {
-          document: { title: "資料を完成させる", category: "work", jobs: [["情報を集める",10,2],["構成を作る",10,2],["本文を作る",25,5],["見直す",10,2]] },
-          study: { title: "今日の勉強を終える", category: "study", jobs: [["教材を開く",5,1],["学習する",25,5],["復習する",10,2]] },
-          cleanup: { title: "部屋を片づける", category: "life", jobs: [["物を分ける",10,2],["元の場所へ戻す",15,3],["仕上げる",5,1]] },
-          admin: { title: "事務作業を進める", category: "work", jobs: [["確認する",5,1],["入力する",15,3],["送信する",5,1]] }
+          document: { title: "資料を完成させる", category: "仕事", jobs: [["情報を集める",10,2],["構成を作る",10,2],["本文を作る",25,5],["見直す",10,2]] },
+          study: { title: "今日の勉強を終える", category: "学習", jobs: [["教材を開く",5,1],["学習する",25,5],["復習する",10,2]] },
+          cleanup: { title: "部屋を片づける", category: "生活", jobs: [["物を分ける",10,2],["元の場所へ戻す",15,3],["仕上げる",5,1]] }
         };
         var template = templates[name];
         if (!template) return;
         if (!routeDialog.open) openRouteDialog(null);
         routeTitleInput.value = template.title;
-        routeCategoryInput.value = template.category || "work";
+        routeCategoryInput.value = template.category;
         stationEditor.innerHTML = "";
         template.jobs.forEach(function (job) {
           addStationRow({ id: uid(), name: job[0], minutes: job[1], splitCount: job[2] });
@@ -3034,7 +2959,7 @@
         var copy = {
           id: uid(),
           title: copiedTitle,
-          category: source.category || "work",
+          category: source.category || "",
           deadline: source.deadline || "",
           progressIndex: 0,
           stationElapsed: 0,
@@ -3070,7 +2995,7 @@
       function archiveRoute(id) {
         var route = state.routes.find(function (item) { return item.id === id; });
         if (!route || route.progressIndex < route.stations.length) {
-          showToast("すべて完了したルートだけ保管できます");
+          showToast("ゴールに到着したルートだけ保管できます");
           return;
         }
         route.running = false;
@@ -3085,7 +3010,7 @@
         state.currentView = "archive";
         saveState();
         render();
-        showToast("「" + route.title + "」を完了したルートへ保管しました");
+        showToast("「" + route.title + "」を到着したルートへ保管しました");
       }
 
       function restoreRoute(id) {
@@ -3097,7 +3022,7 @@
         state.currentView = "home";
         saveState();
         render();
-        showToast("今日やることへ戻しました");
+        showToast("今日のルートへ戻しました");
       }
 
       function reuseRoute(id) {
@@ -3297,7 +3222,6 @@
           }
         }
         if (action === "start-active") startActive();
-        if (action === "quick-start") quickStart(actionButton.dataset.minutes);
         if (action === "restart-route") restartRoute();
         if (action === "go-home") switchView("home");
         if (action === "focus-display-task" || action === "focus-display-route") {
@@ -3306,7 +3230,6 @@
           renderFocus();
         }
         if (action === "toggle-timer") toggleTimer();
-        if (action === "end-today") endToday();
         if (action === "reset-task") {
           var resetRoute = activeRoute();
           var resetGroup = resetRoute && jobGroups(resetRoute).find(function (group) {

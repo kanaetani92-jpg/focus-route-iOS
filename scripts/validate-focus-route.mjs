@@ -25,7 +25,7 @@ const requireText = (key, needle) => {
 
 requireText("web", "<title>Focus Route</title>");
 requireText("web", "今日、どこまで進みますか");
-requireText("web", "完了したルート");
+requireText("web", "到着したルート");
 requireText("web", "NativeAudioMode");
 requireText("publicWeb", "<title>Focus Route</title>");
 requireText("capacitor", "works.psychcraft.focusroute");
@@ -60,6 +60,10 @@ requireText("web", "集中画面の表示");
 requireText("web", "focusDisplayMode");
 requireText("web", "routeOverviewList");
 requireText("web", "focus-display-route");
+requireText("web", "routeCategoryInput");
+requireText("web", "route-helper-card");
+requireText("web", "task-split-field");
+requireText("web", "カテゴリ");
 
 if (contents.web !== contents.publicWeb) {
   throw new Error("www/index.html and ios/App/App/public/index.html are not synchronized");
